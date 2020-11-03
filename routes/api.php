@@ -19,10 +19,13 @@ use Illuminate\Support\Facades\Route;
 // });
 
 route::GET("operations", "App\Http\Controllers\OperationsController@index")->name('operations.index');
-route::POST("operations", "App\Http\Controllers\OperationsController@store");
+route::GET("operations/{id}", "App\Http\Controllers\OperationsController@show");
 
-// route::PUT("operations", "App\Http\Controllers\OperationsController@update");
-// route::DELETE("operations", "App\Http\Controllers\OperationsController@destroy");
+route::POST("operations", "App\Http\Controllers\OperationsController@store")->name('operations.store');
+route::DELETE("operations/{id}", "App\Http\Controllers\OperationsController@delete")->name('operations.delete');
+
+route::PUT("operations/{id}", "App\Http\Controllers\OperationsController@update")->name('operations.update'); // POST
+
 
 
 route::get("accounts", "App\Http\Controllers\AccountsController@index")->name('accounts.index');

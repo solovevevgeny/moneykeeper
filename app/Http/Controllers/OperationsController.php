@@ -15,7 +15,6 @@ class OperationsController extends Controller{
     }
 
     public function store(Request $request) {
-
         $validator = Validator::make($request->all(), [
             'type' => 'string|required',
             'amount' => 'required',
@@ -25,17 +24,48 @@ class OperationsController extends Controller{
         ]);
 
         if ($validator->fails()) {
-            return response(['errors'=>$validator->fails()], 500);
+            return response(['errors'=>$validator->fails()], 400); //bad request
         }
 
         $operation = Operation::create($request->all());
         $operation->save();
      
-        return response (['operation'=>$operation], 201); // CREATED
+        return response (['operation'=>$operation], 201); // created
     }
 
-    public function update(Request $request) {}
+    public function update($id, Request $request) {
+        $operation = Operation::find($id);
+        if ($operation == null) {
+            return response (null, 404);
+        }
+        else {
+            $operation->update($request->all());
+            return response ($operation, 201);
+        }
+        
+    }
 
-    public function destroy(Request $request) {}
+    public function delete($id) {
+        // todo: validation 
+        $operation = Operation::find($id);
+        if ($operation !== null) {
+            $deleteResult = $operation->delete();
+            return response(null, 204); // delete success, empty entity
+        }
+        else {
+            return response (null, 404); // not found
+        }
+
+    }
+
+    public function show($id) {
+        $operation = Operation::find($id);
+        if ($operation == null) {
+            return response (null, 404); // operation not found
+        }
+        else {
+            return $operation;
+        }
+    }
 
 }
