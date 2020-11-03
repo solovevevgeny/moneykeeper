@@ -18,14 +18,11 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-route::GET("operations", "App\Http\Controllers\OperationsController@index")->name('operations.index');
-route::GET("operations/{id}", "App\Http\Controllers\OperationsController@show");
+route::POST("operations", "App\Http\Controllers\OperationsController@store")->name('operations.store');          // create
+route::PUT("operations/{id}", "App\Http\Controllers\OperationsController@update")->name('operations.update');    // update
+route::GET("operations", "App\Http\Controllers\OperationsController@index")->name('operations.index');           // read list 
+route::DELETE("operations/{id}", "App\Http\Controllers\OperationsController@delete")->name('operations.delete'); // delete
+route::GET("operations/{id}", "App\Http\Controllers\OperationsController@show");                                 // show current
 
-route::POST("operations", "App\Http\Controllers\OperationsController@store")->name('operations.store');
-route::DELETE("operations/{id}", "App\Http\Controllers\OperationsController@delete")->name('operations.delete');
-
-route::PUT("operations/{id}", "App\Http\Controllers\OperationsController@update")->name('operations.update'); // POST
-
-
-
-route::get("accounts", "App\Http\Controllers\AccountsController@index")->name('accounts.index');
+route::get("accounts", "App\Http\Controllers\AccountsController@index")->name('accounts.index');                 // list
+route::post("accounts", "App\Http\Controllers\AccountsController@store")->name("accounts.create");               // create

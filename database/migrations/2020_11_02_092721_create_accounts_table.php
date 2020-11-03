@@ -14,9 +14,9 @@ class CreateAccountsTable extends Migration
     public function up(){
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string("title");
-            $table->double("start_amount");
-            $table->double("current_amount");
+            $table->string("title")->fillable();
+            $table->double("start_amount")->fillable()->default(0);
+            $table->double("current_amount")->default(0);
             $table->timestamps();
         });
     }
