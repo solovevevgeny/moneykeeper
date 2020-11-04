@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-route::POST("operations", "App\Http\Controllers\OperationsController@store")->name('operations.store');          // create
+route::POST("operations", "App\Http\Controllers\OperationsController@create")->name('operations.store');          // create
 route::PUT("operations/{id}", "App\Http\Controllers\OperationsController@update")->name('operations.update');    // update
 route::GET("operations", "App\Http\Controllers\OperationsController@index")->name('operations.index');           // read list 
 route::DELETE("operations/{id}", "App\Http\Controllers\OperationsController@delete")->name('operations.delete'); // delete

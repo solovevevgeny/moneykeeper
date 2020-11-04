@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Operation;
+use App\Models\Account;
 
 class OperationsController extends Controller{
     
@@ -14,23 +15,87 @@ class OperationsController extends Controller{
         ], 200);
     }
 
-    public function store(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'type' => 'string|required',
-            'amount' => 'required',
-            'account_from_id' => 'integer',
-            'account_to_id' => 'integer',
-            'comment'=>'string'
-        ]);
 
-        if ($validator->fails()) {
-            return response(['errors'=>$validator->fails()], 400); //bad request
-        }
+    private function accountAmountChange($account_id, $amount) {
+        $account = Account::find($account_id);
+        $account->current_amount = $account->current_amount + $amount;
+        $account->save();
+    }
 
+    private function operationAdd($request) {
         $operation = Operation::create($request->all());
         $operation->save();
-     
-        return response (['operation'=>$operation], 201); // created
+
+        $result = ['data'=>$operation, 'statusCode'=>201];
+        $this->accountAmountChange($request->input('account_to_id'), $request->input('amount'));
+
+        return $result;
+    }
+
+    private function operationSup($request) {
+        $operation = Operation::create($request->all());
+        $operation->save();
+
+        $result = ['data'=>$operation, 'statusCode'=>201];
+
+        $this->accountAmountChange($request->input('account_from_id'), $request->input('amount'));
+        return $result;
+    }
+
+    private function operationMove($request) {
+        $operation = Operation::create($request->all());
+        $operation->save();
+
+        $result = ['data'=>$operation, 'statusCode'=>201];
+
+        $this->accountAmountChange($request->input('account_to_id'), $request->input('amount')); // +
+        $this->accountAmountChange($request->input('account_from_id'), $request->input('amount') * -1 ); // -
+
+        return $result;
+    }
+
+    public function create(Request $request) {
+
+        switch ($request->input('type')){
+            case 'Add': 
+                $validateRules = [
+                    'type' => 'string:requried',
+                    'amount' => 'required|integer',
+                    'account_to_id' => 'required|integer',
+                    'comment' => 'string'
+                ];
+            break;
+
+            case 'Sup': 
+                $validateRules = [
+                        'type' => 'string:requried',
+                        'amount' => 'required|integer',
+                        'account_from_id' => 'required|integer',
+                        'comment' => 'string'
+                    ];
+                break;
+
+            case 'Move': 
+                $validateRules = [
+                        'type' => 'string:requried',
+                        'amount' => 'required|integer',
+                        'account_to_id' => 'required|integer',
+                        'account_from_id' => 'required|integer',
+                        'comment' => 'string'
+                    ];
+                break;
+            }
+            
+        $validator = Validator::make($request->all(), $validateRules);
+
+        if ($validator->fails()) {
+             return response()->json(['errors'=>$validator->errors()]);
+        }
+
+        $callMethod = 'operation' . $request->input('type');
+        $result = $this->{$callMethod}($request);
+
+        return response ($result['data'], $result['statusCode']); // created
     }
 
     public function update($id, Request $request) {
